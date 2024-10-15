@@ -3,7 +3,7 @@ const register = async ()=>{
         challenge: new ArrayBuffer(8),
         rp: {
           name: "Example",
-          id: "localhost",
+          id: "kmarrip.co",
         },
         user: {
           id: new ArrayBuffer(10),
