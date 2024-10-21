@@ -1,4 +1,5 @@
 import { LoginController} from './login'
-import { GenerateRegistrationOptions } from './generateRegistrationOptions'
+import { GenerateRegistrationOptionsController } from './generateRegistrationOptions'
+import { VerifyRegistrationOptionsController } from "./verifyRegistrationOptions";
 
-export {LoginController, GenerateRegistrationOptions}
+export {LoginController, GenerateRegistrationOptionsController, VerifyRegistrationOptionsController}

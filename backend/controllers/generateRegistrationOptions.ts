@@ -1,26 +1,16 @@
 import { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/types";
 import { Env } from "../env";
+import { rpID,rpName,origin } from "../config";
 import {
     generateRegistrationOptions
 } from '@simplewebauthn/server';
+import {getUserByEmail,saveOptionsWithUser} from "../repository";
 
 interface IRegisterRequest {
 	email: string
 }
-const getUserByEmail = async (email:String, env: Env): Promise<Record<string,unknown>[]>=>{
-    const { results } = await env.DB.prepare(
-        "SELECT * FROM Users WHERE email = ?;"
-    )
-        .bind(email)
-        .all()
-    return results;
-}
 
-const rpName = 'passkeys kmarrip co';
-const rpID = 'passkeys.kmarrip.co';
-const origin = `https://${rpID}`;
-
-const GenerateRegistrationOptions = async (request: Request, env: Env):Promise<Response>=>{
+const GenerateRegistrationOptionsController = async (request: Request, env: Env):Promise<Response>=>{
 
     const { pathname } = new URL(request.url);
 	const method = request.method;
@@ -34,14 +24,14 @@ const GenerateRegistrationOptions = async (request: Request, env: Env):Promise<R
             "Message": 'User already exists, Login instead'
         })
         // this is when i need to give the user a challenge
-        // in the subsequent requests i would an email and also a response to the email
-
+        // in the subsequent requests i would send email and also a response to the email
 
 
         const options: PublicKeyCredentialCreationOptionsJSON = await generateRegistrationOptions({
             rpName,
             rpID,
             userName: email,
+            userDisplayName: email,
             // Don't prompt users for additional information about the authenticator
             // (Recommended for smoother UX)
             attestationType: 'none',
@@ -54,7 +44,8 @@ const GenerateRegistrationOptions = async (request: Request, env: Env):Promise<R
                 authenticatorAttachment: 'platform',
             },
         });
-
+        // this should be saved along with the user in the database, should be enough to save the challange
+        await saveOptionsWithUser(email,options,env)
         return Response.json(options)
     }
 
@@ -62,4 +53,4 @@ const GenerateRegistrationOptions = async (request: Request, env: Env):Promise<R
 }
 
 
-export {GenerateRegistrationOptions}
+export {GenerateRegistrationOptionsController}
