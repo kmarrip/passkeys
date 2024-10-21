@@ -1,5 +1,6 @@
 import { Env } from "../env";
 import { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/types";
+import { BadRequestError } from "../errors";
 
 const getUserByEmail = async (email:String, env: Env): Promise<Record<string,unknown>[]>=>{
     const { results } = await env.DB.prepare(
@@ -27,12 +28,10 @@ const getOptionsForUser = async (email:string,env:Env): Promise<PublicKeyCredent
         .bind(email)
         .all()
     const results = response.results;
-    if(results.length == 0)throw new Error('No challenges saved for this user')
-    if(results.length >1) throw new Error(`System error more than one challenge saved for this user, this shouldn't have happened`)
+    if(results.length == 0)throw new BadRequestError('No challenges saved for this user')
+    if(results.length >1) throw new BadRequestError(`System error more than one challenge saved for this user, this shouldn't have happened`,500)
     const challenge= String(results[0].challenge);
-    console.log(challenge)
     const opts = JSON.parse(atob(challenge));
-    console.log(opts)
     return opts;
 }
 
