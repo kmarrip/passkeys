@@ -1,4 +1,4 @@
-##GooglePassKeys
+## GooglePassKeys
 
 1. This is a new authentication mechanism for registering and logging in users.
 2. The user doesn't have to remember the passwords anymore, authentication happens over public key cryptography.
